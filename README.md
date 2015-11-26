@@ -1,0 +1,1 @@
+Create your own branches if you're going to work on code or GUI that might break something or cause errors with pushing.
