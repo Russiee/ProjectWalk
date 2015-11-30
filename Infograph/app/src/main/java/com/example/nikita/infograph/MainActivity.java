@@ -1,15 +1,20 @@
 package com.example.nikita.infograph;
 
 import android.app.ProgressDialog;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,60 +40,47 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class MainActivity extends AppCompatActivity {
 
     List<Country> countriesList;
-    ProgressBar spinner;
-    Boolean finishedLoading;
-    TextView testText;
-    WebView chartView;
-    String chartText;
-    String headerText = "<html> <head> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
-            "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
 
+    WebView chartView; //The main view for the chart
+    String chartText; //The total text to be submitted to the chart
+
+    /*
+    Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
+     */
+    String headerText = "<html> <head> <meta name='viewport' content='width=device-length, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
+            "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
     String mediumText = "";
-    String endText = "]);\n" +
-            "\n" +
-            "        var options = {region: '150'};\n" +
-            "\n" +
-            "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" +
-            "\n" +
-            "        chart.draw(data, options);\n" +
-            "      }\n" +
-            "    </script>\n" +
-            "  </head>\n" +
-            "  <body>\n" +
-            "    <div id=\"regions_div\" style=\"width: 900px; height: 500px;\"></div>\n" +
-            "  </body>\n" +
-            "</html>";
-        @Override
+    String endText;
+
+    /**
+     * Creates the Activity - without a title
+     * Retrieves screen size - Adjusts webview size to fit screen
+     * Executes XMLparsing in another thread
+     * @param savedInstanceState
+     */
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //Removes TitleBar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        testText = (TextView) findViewById(R.id.testText);
+
+        /*
+        Calculates display size of the device it is used on and fits the WebView to be full screen around it
+         */
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels/2;
+        int height = displayMetrics.heightPixels/2;
+
+        /*
+        Edits the properties of the HTML file to be injected into the WebView to retrieve the chart using the screens dimensions.
+         */
+        endText = "]);\n" + "\n" + "        var options = {region: '150', backgroundColor: '#81d4fa', datalessRegionColor: '#f8bbd0', height: "+height+", width: "+ width + "};\n" + "\n" + "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" + "\n" +
+                "        chart.draw(data, options);\n" + "      }\n" + "    </script>\n" + "  </head>\n" + "  <body>\n" + "    <div id=\"regions_div\" style=\"width: "+width+"px; height: "+height+"px;\"></div>\n" + "  </body>\n" + "</html>";
         chartView = (WebView) findViewById(R.id.chartView);
-        new parseXML().execute("");
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        //Executes parsing the XML in another Thread
+            new parseXML().execute("");
     }
 
     private class parseXML extends AsyncTask<String, Void, Boolean> {
@@ -99,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             this.dialog.setMessage("Loading XML Data...");
             this.dialog.show();
-            finishedLoading = false;
         }
 
         @Override
@@ -141,9 +132,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Country country = countriesList.get(10);
-                System.out.println(country.getName());
-                System.out.println("Testing!");
                 return true;
             } catch(Exception e) {
                 e.printStackTrace();
@@ -154,24 +142,25 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            testText.setText(countriesList.get(14).getName());
             if(dialog.isShowing()) {
                 dialog.dismiss();
             }
-            finishedLoading = true;
-
-            for(int i = 0; i < countriesList.size(); i++) {
-                Country c = countriesList.get(i);
-                if(i == countriesList.size()-1) {
-                    mediumText += c.getNameAndValue("2014");
-                } else {
-                    mediumText += c.getNameAndValue("2014") + ", \n";
-                }
-            }
-            chartText = headerText + mediumText + endText;
-            chartView.getSettings().setJavaScriptEnabled(true);
-            chartView.loadData(chartText, "text/html", null);
-
+            loadChartData(chartView, "2014");
         }
+    }
+
+    public void loadChartData(WebView webview, String year) {
+        for(int i = 0; i < countriesList.size(); i++) {
+            Country c = countriesList.get(i);
+            if(i == countriesList.size()-1) {
+                mediumText += c.getNameAndValue(year);
+            } else {
+                mediumText += c.getNameAndValue(year) + ", \n";
+            }
+        }
+        chartText = headerText + mediumText + endText;
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.loadData(chartText, "text/html", null);
+        webview.setVisibility(View.VISIBLE);
     }
 }
