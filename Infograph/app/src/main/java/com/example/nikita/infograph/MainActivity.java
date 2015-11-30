@@ -1,5 +1,6 @@
 package com.example.nikita.infograph;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,14 +35,38 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class MainActivity extends AppCompatActivity {
 
     List<Country> countriesList;
-    @Override
+    ProgressBar spinner;
+    Boolean finishedLoading;
+    TextView testText;
+    WebView chartView;
+    String chartText;
+    String headerText = "<html> <head> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
+            "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
+
+    String mediumText = "";
+    String endText = "]);\n" +
+            "\n" +
+            "        var options = {region: '150'};\n" +
+            "\n" +
+            "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" +
+            "\n" +
+            "        chart.draw(data, options);\n" +
+            "      }\n" +
+            "    </script>\n" +
+            "  </head>\n" +
+            "  <body>\n" +
+            "    <div id=\"regions_div\" style=\"width: 900px; height: 500px;\"></div>\n" +
+            "  </body>\n" +
+            "</html>";
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        testText = (TextView) findViewById(R.id.testText);
+        chartView = (WebView) findViewById(R.id.chartView);
         new parseXML().execute("");
-        System.out.println(countriesList);
     }
 
     @Override
@@ -63,10 +91,19 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class parseXML extends AsyncTask<String, Void, String> {
+    private class parseXML extends AsyncTask<String, Void, Boolean> {
+
+        private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
 
         @Override
-        protected String doInBackground(String... params) {
+        protected void onPreExecute() {
+            this.dialog.setMessage("Loading XML Data...");
+            this.dialog.show();
+            finishedLoading = false;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
             try {
                 URL url = new URL("http://api.worldbank.org/countries/ALB;ARM;AUT;BLR;BEL;BIH;BGR;CHI;HRV;CYP;CZE;DNK;EST;FIN;FRA;GEO;DEU;GRC;HUN;ISL;IRL;IMY;ITA;KSV;LVA;LIE;LTU;LUX;MKD;MCO;MNE;NLD;NOR;POL;PRT;ROM;RUS;SRB;SVK;SVN;ESP;SWE;CHE;TUR;UKR;GBR;MLT/indicators/NY.GDP.MKTP.KD?per_page=3000&MRV=50&Gapfill=Y&format=xml&date=1960:2015");
                 URLConnection connection = url.openConnection();
@@ -107,16 +144,34 @@ public class MainActivity extends AppCompatActivity {
                 Country country = countriesList.get(10);
                 System.out.println(country.getName());
                 System.out.println("Testing!");
+                return true;
             } catch(Exception e) {
                 e.printStackTrace();
                 System.out.println("THERE WAS AN ERROR!");
+                return false;
             }
-            return "success";
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(final Boolean success) {
+            testText.setText(countriesList.get(14).getName());
+            if(dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            finishedLoading = true;
+
+            for(int i = 0; i < countriesList.size(); i++) {
+                Country c = countriesList.get(i);
+                if(i == countriesList.size()-1) {
+                    mediumText += c.getNameAndValue("2014");
+                } else {
+                    mediumText += c.getNameAndValue("2014") + ", \n";
+                }
+            }
+            chartText = headerText + mediumText + endText;
+            chartView.getSettings().setJavaScriptEnabled(true);
+            chartView.loadData(chartText, "text/html", null);
+
         }
     }
 }
