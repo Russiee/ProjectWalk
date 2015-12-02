@@ -47,10 +47,17 @@ public class MainActivity extends AppCompatActivity {
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      */
-    String headerText = "<html> <head> <meta name='viewport' content='width=device-length, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
-            "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
+    String headerText = "<html> <head> <meta name='viewport' content='width=device-width, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
+                        "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
     String mediumText = "";
     String endText;
+
+    String initialURL = "http://api.worldbank.org/countries/ALB;ARM;AUT;BLR;BEL;BIH;BGR;CHI;HRV;CYP;CZE;DNK;EST;FIN;FRA;GEO;MD;DEU;GRC;TR;HUN;ISL;IRL;IMY;ITA;KSV;LVA;LIE;LTU;LUX;MKD;MCO;MNE;NLD;NOR;POL;PRT;ROM;RUS;SRB;SVK;SVN;ESP;SWE;CHE;TUR;UKR;GBR;MLT/indicators/";
+    String solarURL = initialURL + "2.1.6_SHARE.SOLAR?per_page=900&date=2000%3A2015";
+    String windURL = initialURL + "2.1.5_SHARE.WIND?per_page=900&date=2000%3A2015";
+    String biofuelURL = initialURL + "2.1.4_SHARE.BIOFUELS?per_page=900&date=2000%3A2015";
+    String hydroURL = initialURL + "2.1.3_SHARE.HYDRO?per_page=900&date=2000%3A2015";
+    String wasteURL = initialURL + "2.1.8_SHARE.WASTE?per_page=900&date=2000%3A2015";
 
     /**
      * Creates the Activity - without a title
@@ -75,12 +82,24 @@ public class MainActivity extends AppCompatActivity {
         /*
         Edits the properties of the HTML file to be injected into the WebView to retrieve the chart using the screens dimensions.
          */
-        endText = "]);\n" + "\n" + "        var options = {region: '150', backgroundColor: '#81d4fa', datalessRegionColor: '#f8bbd0', height: "+height+", width: "+ width + "};\n" + "\n" + "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" + "\n" +
-                "        chart.draw(data, options);\n" + "      }\n" + "    </script>\n" + "  </head>\n" + "  <body>\n" + "    <div id=\"regions_div\" style=\"width: "+width+"px; height: "+height+"px;\"></div>\n" + "  </body>\n" + "</html>";
+        endText = "]);\n" +
+                "\n" +
+                "        var options = {region: '150'};\n" +
+                "\n" +
+                "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" +
+                "\n" +
+                "        chart.draw(data, options);\n" +
+                "      }\n" +
+                "    </script>\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "    <div id=\"regions_div\" style=\"width: 1178px; height: 831px;\"></div>\n" +
+                "  </body>\n" +
+                "</html>";
         chartView = (WebView) findViewById(R.id.chartView);
 
         //Executes parsing the XML in another Thread
-            new parseXML().execute("");
+            new parseXML().execute(solarURL, windURL, biofuelURL, hydroURL, wasteURL);
     }
 
     private class parseXML extends AsyncTask<String, Void, Boolean> {
@@ -95,49 +114,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-            try {
-                URL url = new URL("http://api.worldbank.org/countries/ALB;ARM;AUT;BLR;BEL;BIH;BGR;CHI;HRV;CYP;CZE;DNK;EST;FIN;FRA;GEO;DEU;GRC;HUN;ISL;IRL;IMY;ITA;KSV;LVA;LIE;LTU;LUX;MKD;MCO;MNE;NLD;NOR;POL;PRT;ROM;RUS;SRB;SVK;SVN;ESP;SWE;CHE;TUR;UKR;GBR;MLT/indicators/NY.GDP.MKTP.KD?per_page=3000&MRV=50&Gapfill=Y&format=xml&date=1960:2015");
-                URLConnection connection = url.openConnection();
-
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-
-                Document doc = builder.parse(connection.getInputStream());
-                NodeList nodeList = doc.getDocumentElement().getChildNodes();
-                countriesList = new ArrayList<Country>();
-                for(int i = 0; i < nodeList.getLength(); i++) {
-                    Node node = nodeList.item(i);
-                    if(node.getNodeType() == Node.ELEMENT_NODE) {
-                        Element elem = (Element) node;
-                        String countryID = elem.getElementsByTagName("wb:country").item(0).getChildNodes().item(0).getNodeValue();
-                        String year = elem.getElementsByTagName("wb:date").item(0).getChildNodes().item(0).getNodeValue();
-                        String value = "";
-                        NodeList nodeValue = elem.getElementsByTagName("wb:value").item(0).getChildNodes();
-                        Boolean exists = false;
-                        if(nodeValue.getLength() != 0) {
-                            value = elem.getElementsByTagName("wb:value").item(0).getChildNodes().item(0).getNodeValue();
-                        } else {
-                            value = "";
-                        }
-                        for(Country c: countriesList) {
-                            if(c.getName().equals(countryID)) {
-                                c.addGDP(year, value);
-                                exists = true;
-                                break;
-                            }
-                        }
-                        if(!exists) {
-                            Country country = new Country(countryID, year, value);
-                            countriesList.add(country);
-                        }
-                    }
-                }
-                return true;
-            } catch(Exception e) {
-                e.printStackTrace();
-                System.out.println("THERE WAS AN ERROR!");
-                return false;
+            ParseXML parse = new ParseXML();
+            for(int i = 0; i < params.length; i++) {
+                parse.parseXML(params[i]);
             }
+            countriesList = parse.getCountriesList();
+            return true;
         }
 
         @Override
@@ -145,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
             if(dialog.isShowing()) {
                 dialog.dismiss();
             }
-            loadChartData(chartView, "2014");
+            loadChartData(chartView, "2011");
+            System.out.println(chartText);
         }
     }
 
@@ -153,9 +136,10 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < countriesList.size(); i++) {
             Country c = countriesList.get(i);
             if(i == countriesList.size()-1) {
-                mediumText += c.getNameAndValue(year);
+                mediumText += c.getBiofuel(year);
+                System.out.println(c.getBioEnergyForYear("2011"));
             } else {
-                mediumText += c.getNameAndValue(year) + ", \n";
+                mediumText += c.getBiofuel(year) + ", \n";
             }
         }
         chartText = headerText + mediumText + endText;
