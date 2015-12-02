@@ -41,7 +41,11 @@ public class ParseXML {
                     Element elem = (Element) node;
                     String energyID = elem.getElementsByTagName("wb:indicator").item(0).getChildNodes().item(0).getNodeValue();
                     String countryID = elem.getElementsByTagName("wb:country").item(0).getChildNodes().item(0).getNodeValue();
-                    String year = elem.getElementsByTagName("wb:date").item(0).getChildNodes().item(0).getNodeValue();
+                    String yearString = elem.getElementsByTagName("wb:date").item(0).getChildNodes().item(0).getNodeValue();
+                    if(yearString.length() >= 6 && yearString.substring(0, 6).equals("Period")) {
+                        yearString = "1000";
+                    }
+                    int year = Integer.valueOf(yearString);
                     String value = "0";
                     NodeList nodeValue = elem.getElementsByTagName("wb:value").item(0).getChildNodes();
                     Boolean exists = false;

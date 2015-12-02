@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/relativeLayout"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#3F423F">
 
 
     <WebView
@@ -14,4 +15,24 @@
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:visibility="invisible" />
+
+    <SeekBar
+        android:layout_width="900dp"
+        android:layout_height="50dp"
+        android:id="@+id/yearSeek"
+        android:layout_below="@+id/chartView"
+        android:layout_alignParentStart="true"
+        android:max="15"
+        android:textAlignment="textStart"
+        android:progress="14" />
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:id="@+id/yearTextView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:textColor="#f2f2ed" />
+
 </RelativeLayout>

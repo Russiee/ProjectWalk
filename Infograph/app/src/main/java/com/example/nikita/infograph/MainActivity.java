@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Document;
@@ -44,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     WebView chartView; //The main view for the chart
     String chartText; //The total text to be submitted to the chart
 
+    SeekBar yearSeek;
+    TextView yearText;
+    int selectedYear;
+
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      */
@@ -53,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
     String endText;
 
     String initialURL = "http://api.worldbank.org/countries/ALB;ARM;AUT;BLR;BEL;BIH;BGR;CHI;HRV;CYP;CZE;DNK;EST;FIN;FRA;GEO;MD;DEU;GRC;TR;HUN;ISL;IRL;IMY;ITA;KSV;LVA;LIE;LTU;LUX;MKD;MCO;MNE;NLD;NOR;POL;PRT;ROM;RUS;SRB;SVK;SVN;ESP;SWE;CHE;TUR;UKR;GBR;MLT/indicators/";
-    String solarURL = initialURL + "2.1.6_SHARE.SOLAR?per_page=900&date=2000%3A2015";
-    String windURL = initialURL + "2.1.5_SHARE.WIND?per_page=900&date=2000%3A2015";
-    String biofuelURL = initialURL + "2.1.4_SHARE.BIOFUELS?per_page=900&date=2000%3A2015";
-    String hydroURL = initialURL + "2.1.3_SHARE.HYDRO?per_page=900&date=2000%3A2015";
-    String wasteURL = initialURL + "2.1.8_SHARE.WASTE?per_page=900&date=2000%3A2015";
+    String solarURL = initialURL + "2.1.6_SHARE.SOLAR?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
+    String windURL = initialURL + "2.1.5_SHARE.WIND?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
+    String biofuelURL = initialURL + "2.1.4_SHARE.BIOFUELS?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
+    String hydroURL = initialURL + "2.1.3_SHARE.HYDRO?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
+    String wasteURL = initialURL + "2.1.8_SHARE.WASTE?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
 
     /**
      * Creates the Activity - without a title
@@ -74,10 +79,27 @@ public class MainActivity extends AppCompatActivity {
         /*
         Calculates display size of the device it is used on and fits the WebView to be full screen around it
          */
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels/2;
-        int height = displayMetrics.heightPixels/2;
+        yearSeek = (SeekBar) findViewById(R.id.yearSeek);
+        yearText = (TextView) findViewById(R.id.yearTextView);
+        selectedYear = 2011;
+        yearSeek.setMax(22);
+        yearText.setText(String.valueOf(selectedYear));
+        yearSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                selectedYear = progress + 1990;
+                yearText.setText(Integer.toString(selectedYear));
+                loadChartData(chartView, selectedYear);
+            }
+        });
 
         /*
         Edits the properties of the HTML file to be injected into the WebView to retrieve the chart using the screens dimensions.
@@ -97,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 "  </body>\n" +
                 "</html>";
         chartView = (WebView) findViewById(R.id.chartView);
+        chartView.getSettings().setJavaScriptEnabled(true);
 
         //Executes parsing the XML in another Thread
             new parseXML().execute(solarURL, windURL, biofuelURL, hydroURL, wasteURL);
@@ -127,23 +150,21 @@ public class MainActivity extends AppCompatActivity {
             if(dialog.isShowing()) {
                 dialog.dismiss();
             }
-            loadChartData(chartView, "2011");
-            System.out.println(chartText);
+            loadChartData(chartView, selectedYear);
         }
     }
 
-    public void loadChartData(WebView webview, String year) {
+    public void loadChartData(WebView webview, int year) {
+        mediumText = "";
         for(int i = 0; i < countriesList.size(); i++) {
             Country c = countriesList.get(i);
             if(i == countriesList.size()-1) {
                 mediumText += c.getBiofuel(year);
-                System.out.println(c.getBioEnergyForYear("2011"));
             } else {
                 mediumText += c.getBiofuel(year) + ", \n";
             }
         }
         chartText = headerText + mediumText + endText;
-        webview.getSettings().setJavaScriptEnabled(true);
         webview.loadData(chartText, "text/html", null);
         webview.setVisibility(View.VISIBLE);
     }

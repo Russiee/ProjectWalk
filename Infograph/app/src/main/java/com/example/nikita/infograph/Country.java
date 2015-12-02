@@ -11,19 +11,19 @@ import java.util.Map;
 public class Country {
 
     private String name;
-    private List<String> years = new ArrayList<String>();
-    private Map<String, String> solarEnergy = new HashMap<String, String>();
-    private Map<String, String> windEnergy = new HashMap<String, String>();
-    private Map<String, String> biofuelEnergy = new HashMap<String, String>();
-    private Map<String, String> hydroEnergy = new HashMap<String, String>();
-    private Map<String, String> wasteEnergy = new HashMap<String, String>();
+    private List<Integer> years = new ArrayList<Integer>();
+    private Map<Integer, String> solarEnergy = new HashMap<Integer, String>();
+    private Map<Integer, String> windEnergy = new HashMap<Integer, String>();
+    private Map<Integer, String> biofuelEnergy = new HashMap<Integer, String>();
+    private Map<Integer, String> hydroEnergy = new HashMap<Integer, String>();
+    private Map<Integer, String> wasteEnergy = new HashMap<Integer, String>();
 
     private static final String SOLAR_ID = "Solar energy share of TFEC (%)";
     private static final String WIND_ID = "Wind energy share of TFEC (%)";
     private static final String BIO_ID = "Liquid biofuels share of TFEC (%)";
     private static final String HYDRO_ID = "Hydro energy share of TFEC (%)";
 
-    public Country(String name, String year, String value, String energyType) {
+    public Country(String name, int year, String value, String energyType) {
         this.name = name;
         years.add(year);
         addToEnergyType(energyType, year, value);
@@ -33,12 +33,12 @@ public class Country {
         this.name = name;
     }
 
-    public void addValue(String year, String value, String energyType) {
+    public void addValue(int year, String value, String energyType) {
         years.add(year);
         addToEnergyType(energyType, year, value);
     }
 
-    private void addToEnergyType(String energy, String year, String value) {
+    private void addToEnergyType(String energy, int year, String value) {
         switch(energy) {
             case SOLAR_ID: solarEnergy.put(year, value);
                 break;
@@ -56,35 +56,35 @@ public class Country {
         return name;
     }
 
-    public String getSolarEnergyForYear(String year) {
+    public String getSolarEnergyForYear(int year) {
         return solarEnergy.get(year);
     }
 
-    public String getWindEnergyForYear(String year) { return windEnergy.get(year); }
+    public String getWindEnergyForYear(int year) { return windEnergy.get(year); }
 
-    public String getBioEnergyForYear(String year) { return biofuelEnergy.get(year); }
+    public String getBioEnergyForYear(int year) { return biofuelEnergy.get(year); }
 
-    public String getHydroEnergyForYear(String year) { return hydroEnergy.get(year); }
+    public String getHydroEnergyForYear(int year) { return hydroEnergy.get(year); }
 
-    public String getWasteEnergyForYear(String year) { return wasteEnergy.get(year); }
+    public String getWasteEnergyForYear(int year) { return wasteEnergy.get(year); }
 
-    public String getSolar(String year) {
+    public String getSolar(int year) {
         return "[ '" + name + "', " + solarEnergy.get(year) + "]";
     }
 
-    public String getWind(String year) {
+    public String getWind(int year) {
         return "[ '" + name + "', " + windEnergy.get(year) + "]";
     }
 
-    public String getBiofuel(String year) {
+    public String getBiofuel(int year) {
         return "[ '" + name + "', " + biofuelEnergy.get(year) + "]";
     }
 
-    public String getHydro(String year) {
+    public String getHydro(int year) {
         return "[ '" + name + "', " + hydroEnergy.get(year) + "]";
     }
 
-    public String getWaste(String year) {
+    public String getWaste(int year) {
         return "[ '" + name + "', " + wasteEnergy.get(year) + "]";
     }
 }
