@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 "    </script>\n" +
                 "  </head>\n" +
                 "  <body>\n" +
-                "    <div id=\"regions_div\" style=\"width: 1178px; height: 831px;\"></div>\n" +
+                "    <div id=\"regions_div\" style=\"width: 1178px; height: 600px;\"></div>\n" +
                 "  </body>\n" +
                 "</html>";
         chartView = (WebView) findViewById(R.id.chartView);
