@@ -43,9 +43,9 @@
         android:layout_above="@+id/chartView"
         android:layout_alignParentStart="true"
         android:checked="false"
-        android:textSize="15dp"
-        android:textOff="Renewable"
-        android:textOn="Renewable"
+        android:textSize="10dp"
+        android:textOff="Renewable energy \n share of TFEC (%)"
+        android:textOn="Renewable energy \n share of TFEC (%)"
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />
 
@@ -56,9 +56,9 @@
         android:id="@+id/totalButton"
         android:layout_above="@+id/chartView"
         android:layout_toEndOf="@+id/renewableButton"
-        android:textSize="15dp"
-        android:textOff="Total Energy"
-        android:textOn="Total Energy"
+        android:textSize="10dp"
+        android:textOff="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
+        android:textOn="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
         android:checked="false"
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />
@@ -70,9 +70,9 @@
         android:id="@+id/savingsBtn"
         android:layout_above="@+id/chartView"
         android:layout_toEndOf="@+id/totalButton"
-        android:textSize="15dp"
-        android:textOn="Energy Savings"
-        android:textOff="Energy Savings"
+        android:textSize="10dp"
+        android:textOn="Energy savings of \n primary energy (TJ)"
+        android:textOff="Energy savings of \n primary energy (TJ)"
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />
 
@@ -83,9 +83,9 @@
         android:id="@+id/industrialButton"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/savingsBtn"
-        android:textOff="Industrial"
-        android:textSize="15dp"
-        android:textOn="Industrial"
+        android:textOff="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
+        android:textSize="10dp"
+        android:textOn="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />
 
