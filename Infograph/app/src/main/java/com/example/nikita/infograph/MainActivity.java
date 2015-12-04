@@ -2,44 +2,18 @@ package com.example.nikita.infograph;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,11 +26,10 @@ public class MainActivity extends AppCompatActivity {
     TextView yearText;
     int selectedYear;
 
-    ToggleButton hydroBtn;
-    ToggleButton solarBtn;
-    ToggleButton windBtn;
-    ToggleButton wasteBtn;
-    ToggleButton biofuelBtn;
+    ToggleButton renewableBtn;
+    ToggleButton industrialBtn;
+    ToggleButton totalEnergyBtn;
+    ToggleButton savingsBtn;
 
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
@@ -67,11 +40,12 @@ public class MainActivity extends AppCompatActivity {
     String endText;
 
     String initialURL = "http://api.worldbank.org/countries/ALB;ARM;AUT;BLR;BEL;BIH;BGR;CHI;HRV;CYP;CZE;DNK;EST;FIN;FRA;GEO;MD;DEU;GRC;TR;HUN;ISL;IRL;IMY;ITA;KSV;LVA;LIE;LTU;LUX;MKD;MCO;MNE;NLD;NOR;POL;PRT;ROM;RUS;SRB;SVK;SVN;ESP;SWE;CHE;TUR;UKR;GBR;MLT/indicators/";
-    String solarURL = initialURL + "2.1.6_SHARE.SOLAR?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
-    String windURL = initialURL + "2.1.5_SHARE.WIND?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
-    String biofuelURL = initialURL + "2.1.4_SHARE.BIOFUELS?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
-    String hydroURL = initialURL + "2.1.3_SHARE.HYDRO?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
-    String wasteURL = initialURL + "2.1.8_SHARE.WASTE?per_page=2000&date=1990%3A2015&MRV=25&Gapfill=Y";
+    String renewableURL = initialURL + "2.1_SHARE.TOTAL.RE.IN.TFEC?per_page=700&date=2000%3A2012";
+    String industrialURL = initialURL + "13.1_INDUSTRY.ENERGY.INTENSITY?per_page=700&date=2000%3A2012";
+    String totalEnergyURL = initialURL + "1.1_TOTAL.FINAL.ENERGY.CONSUM?per_page=700&date=2000%3A2012";
+    String savingsURL = initialURL + "10.1_ENERGY.SAVINGS?per_page=700&date=2000:2012";
+
+    String currentEnergy;
 
     /**
      * Creates the Activity - without a title
@@ -85,25 +59,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        solarBtn = (ToggleButton) findViewById(R.id.solarButton);
-        windBtn = (ToggleButton) findViewById(R.id.windButton);
-        hydroBtn = (ToggleButton) findViewById(R.id.hydroButton);
-        biofuelBtn = (ToggleButton) findViewById(R.id.biofuelButton);
-        wasteBtn = (ToggleButton) findViewById(R.id.wasteButton);
+        renewableBtn = (ToggleButton) findViewById(R.id.renewableButton);
+        totalEnergyBtn = (ToggleButton) findViewById(R.id.totalButton);
+        industrialBtn = (ToggleButton) findViewById(R.id.industrialButton);
+        savingsBtn = (ToggleButton) findViewById(R.id.savingsBtn);
 
-        solarBtn.setOnCheckedChangeListener(checkChange);
-        windBtn.setOnCheckedChangeListener(checkChange);
-        hydroBtn.setOnCheckedChangeListener(checkChange);
-        biofuelBtn.setOnCheckedChangeListener(checkChange);
-        wasteBtn.setOnCheckedChangeListener(checkChange);
+        renewableBtn.setOnCheckedChangeListener(checkChange);
+        totalEnergyBtn.setOnCheckedChangeListener(checkChange);
+        industrialBtn.setOnCheckedChangeListener(checkChange);
+        savingsBtn.setOnCheckedChangeListener(checkChange);
 
+        currentEnergy = renewableBtn.getText().toString();
         /*
         Initialises the Seekbar and text associated with the year - Sets it to a range of 1990-2012
          */
         yearSeek = (SeekBar) findViewById(R.id.yearSeek);
         yearText = (TextView) findViewById(R.id.yearTextView);
         selectedYear = 2011;
-        yearSeek.setMax(22);
+        yearSeek.setMax(12);
         yearText.setText(String.valueOf(selectedYear));
         yearSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -116,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                selectedYear = progress + 1990;
+                selectedYear = progress + 2000;
                 yearText.setText(Integer.toString(selectedYear));
-                loadChartData(chartView, selectedYear);
+                loadChartData(chartView, selectedYear, currentEnergy);
             }
         });
 
@@ -143,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         chartView.getSettings().setJavaScriptEnabled(true);
 
         //Executes parsing the XML in another Thread
-            new parseXML().execute(solarURL, windURL, biofuelURL, hydroURL, wasteURL);
+            new parseXML().execute(renewableURL, industrialURL, totalEnergyURL, savingsURL);
     }
 
     private class parseXML extends AsyncTask<String, Void, Boolean> {
@@ -171,18 +144,34 @@ public class MainActivity extends AppCompatActivity {
             if(dialog.isShowing()) {
                 dialog.dismiss();
             }
-            loadChartData(chartView, selectedYear);
+            renewableBtn.setChecked(true);
         }
     }
 
-    public void loadChartData(WebView webview, int year) {
+    public void loadChartData(WebView webview, int year, String energyType) {
         mediumText = "";
         for(int i = 0; i < countriesList.size(); i++) {
             Country c = countriesList.get(i);
             if(i == countriesList.size()-1) {
-                mediumText += c.getBiofuel(year);
+                switch(energyType) {
+                    case "Renewable": mediumText += c.getRenewable(year);
+                        break;
+                    case "Total Energy": mediumText += c.getFinalConsumption(year);
+                        break;
+                    case "Industrial": mediumText += c.getIndustrial(year);
+                        break;
+                    default: mediumText += c.getSavings(year);
+                }
             } else {
-                mediumText += c.getBiofuel(year) + ", \n";
+                switch(energyType) {
+                    case "Renewable": mediumText += c.getRenewable(year) + ", \n";;
+                        break;
+                    case "Total Energy": mediumText += c.getFinalConsumption(year) + ", \n";;
+                        break;
+                    case "Industrial": mediumText += c.getIndustrial(year) + ", \n";;
+                        break;
+                    default: mediumText += c.getSavings(year) + ", \n";;
+                }
             }
         }
         chartText = headerText + mediumText + endText;
@@ -195,61 +184,51 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onCheckedChanged(CompoundButton button, boolean isChecked) {
             if(isChecked) {
-                if(button == solarBtn) {
-                    solarBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
-                    windBtn.setChecked(false);
-                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    hydroBtn.setChecked(false);
-                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    biofuelBtn.setChecked(false);
-                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    wasteBtn.setChecked(false);
-                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                if(button == renewableBtn) {
+                    currentEnergy = renewableBtn.getText().toString();
+                    renewableBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    industrialBtn.setChecked(false);
+                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    totalEnergyBtn.setChecked(false);
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    savingsBtn.setChecked(false);
+                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
 
                 }
-                if(button == windBtn) {
-                    windBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
-                    hydroBtn.setChecked(false);
-                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    biofuelBtn.setChecked(false);
-                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    wasteBtn.setChecked(false);
-                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    solarBtn.setChecked(false);
-                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                if(button == savingsBtn) {
+                    currentEnergy = savingsBtn.getText().toString();
+                    System.out.println(savingsBtn.getText().toString());
+                    savingsBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    industrialBtn.setChecked(false);
+                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    totalEnergyBtn.setChecked(false);
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    renewableBtn.setChecked(false);
+                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
                 }
-                if(button == hydroBtn) {
-                    hydroBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
-                    windBtn.setChecked(false);
-                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    biofuelBtn.setChecked(false);
-                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    wasteBtn.setChecked(false);
-                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    solarBtn.setChecked(false);
-                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                if(button == industrialBtn) {
+                    currentEnergy = industrialBtn.getText().toString();
+                    industrialBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    savingsBtn.setChecked(false);
+                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    totalEnergyBtn.setChecked(false);
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    renewableBtn.setChecked(false);
+                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
                 }
-                if(button == biofuelBtn) {
-                    biofuelBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
-                    windBtn.setChecked(false);
-                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    hydroBtn.setChecked(false);
-                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    wasteBtn.setChecked(false);
-                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    solarBtn.setChecked(false);
-                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                }
-                if(button == wasteBtn) {
-                    wasteBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
-                    windBtn.setChecked(false);
-                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    hydroBtn.setChecked(false);
-                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    biofuelBtn.setChecked(false);
-                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
-                    solarBtn.setChecked(false);
-                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                if(button == totalEnergyBtn) {
+                    currentEnergy = totalEnergyBtn.getText().toString();
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    industrialBtn.setChecked(false);
+                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    savingsBtn.setChecked(false);
+                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    renewableBtn.setChecked(false);
+                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
                 }
             }
         }
