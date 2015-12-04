@@ -22,9 +22,9 @@
         android:id="@+id/yearSeek"
         android:layout_below="@+id/chartView"
         android:layout_alignParentStart="true"
-        android:max="15"
         android:textAlignment="textStart"
-        android:progress="14" />
+        android:progress="21"
+        android:max="22" />
 
     <TextView
         android:layout_width="100dp"
@@ -34,5 +34,73 @@
         android:layout_alignParentEnd="true"
         android:gravity="center"
         android:textColor="#f2f2ed" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Solar Energy"
+        android:id="@+id/solarButton"
+        android:layout_above="@+id/chartView"
+        android:layout_alignParentStart="true"
+        android:checked="false"
+        android:textSize="15dp"
+        android:textOff="Solar"
+        android:textOn="Solar"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Wind Energy"
+        android:id="@+id/windButton"
+        android:layout_above="@+id/chartView"
+        android:layout_toEndOf="@+id/solarButton"
+        android:textSize="15dp"
+        android:textOff="Wind"
+        android:textOn="Wind"
+        android:checked="false"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Biofuel Energy"
+        android:id="@+id/biofuelButton"
+        android:layout_above="@+id/chartView"
+        android:layout_toEndOf="@+id/windButton"
+        android:textSize="15dp"
+        android:textOn="Biofuel"
+        android:textOff="Biofuel"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Hydro Energy"
+        android:id="@+id/hydroButton"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/biofuelButton"
+        android:textOff="Hydro"
+        android:textSize="15dp"
+        android:textOn="Hydro"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/wasteButton"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/hydroButton"
+        android:textOff="Waste"
+        android:textOn="Waste"
+        android:textSize="15dp"
+        android:checked="false"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF" />
 
 </RelativeLayout>

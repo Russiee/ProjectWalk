@@ -1,6 +1,7 @@
 package com.example.nikita.infograph;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.AsyncTask;
@@ -16,9 +17,11 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
     TextView yearText;
     int selectedYear;
 
+    ToggleButton hydroBtn;
+    ToggleButton solarBtn;
+    ToggleButton windBtn;
+    ToggleButton wasteBtn;
+    ToggleButton biofuelBtn;
+
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      */
@@ -76,8 +85,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        solarBtn = (ToggleButton) findViewById(R.id.solarButton);
+        windBtn = (ToggleButton) findViewById(R.id.windButton);
+        hydroBtn = (ToggleButton) findViewById(R.id.hydroButton);
+        biofuelBtn = (ToggleButton) findViewById(R.id.biofuelButton);
+        wasteBtn = (ToggleButton) findViewById(R.id.wasteButton);
+
+        solarBtn.setOnCheckedChangeListener(checkChange);
+        windBtn.setOnCheckedChangeListener(checkChange);
+        hydroBtn.setOnCheckedChangeListener(checkChange);
+        biofuelBtn.setOnCheckedChangeListener(checkChange);
+        wasteBtn.setOnCheckedChangeListener(checkChange);
+
         /*
-        Calculates display size of the device it is used on and fits the WebView to be full screen around it
+        Initialises the Seekbar and text associated with the year - Sets it to a range of 1990-2012
          */
         yearSeek = (SeekBar) findViewById(R.id.yearSeek);
         yearText = (TextView) findViewById(R.id.yearTextView);
@@ -168,4 +189,69 @@ public class MainActivity extends AppCompatActivity {
         webview.loadData(chartText, "text/html", null);
         webview.setVisibility(View.VISIBLE);
     }
+
+    CompoundButton.OnCheckedChangeListener checkChange = new CompoundButton.OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+            if(isChecked) {
+                if(button == solarBtn) {
+                    solarBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    windBtn.setChecked(false);
+                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    hydroBtn.setChecked(false);
+                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    biofuelBtn.setChecked(false);
+                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    wasteBtn.setChecked(false);
+                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+
+                }
+                if(button == windBtn) {
+                    windBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    hydroBtn.setChecked(false);
+                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    biofuelBtn.setChecked(false);
+                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    wasteBtn.setChecked(false);
+                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    solarBtn.setChecked(false);
+                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                }
+                if(button == hydroBtn) {
+                    hydroBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    windBtn.setChecked(false);
+                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    biofuelBtn.setChecked(false);
+                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    wasteBtn.setChecked(false);
+                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    solarBtn.setChecked(false);
+                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                }
+                if(button == biofuelBtn) {
+                    biofuelBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    windBtn.setChecked(false);
+                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    hydroBtn.setChecked(false);
+                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    wasteBtn.setChecked(false);
+                    wasteBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    solarBtn.setChecked(false);
+                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                }
+                if(button == wasteBtn) {
+                    wasteBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    windBtn.setChecked(false);
+                    windBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    hydroBtn.setChecked(false);
+                    hydroBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    biofuelBtn.setChecked(false);
+                    biofuelBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    solarBtn.setChecked(false);
+                    solarBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                }
+            }
+        }
+    };
 }
