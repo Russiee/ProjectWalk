@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
          */
         endText = "]);\n" +
                 "\n" +
-                "        var options = {region: '150', backgroundColor: '#3F424F', datalessRegionColor: '#3F524F'};\n" +
+                "        var options = {region: '150', backgroundColor: '#008080', colorAxis: {colors: ['#00853f', '#ffff00', '#e31b23']}, datalessRegionColor: '#f8bbd0'};\n" +
                 "\n" +
                 "        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));\n" +
                 "\n" +
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 "      }\n" +
                 "    </script>\n" +
                 "  </head>\n" +
-                "  <body style='background-color: #3F423F;'>\n" +
+                "  <body style='background-color: #008080;'>\n" +
                 "    <div id=\"regions_div\" style=\"width: 1178px; height: 600px;\"></div>\n" +
                 "  </body>\n" +
                 "</html>";
