@@ -57,8 +57,8 @@
         android:layout_above="@+id/chartView"
         android:layout_toEndOf="@+id/renewableButton"
         android:textSize="10dp"
-        android:textOff="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
-        android:textOn="Energy intensity of industrial sector \n (MJ/2011 USD PPP)"
+        android:textOff="Total final energy consumption (TFEC) (TJ)"
+        android:textOn="Total final energy consumption (TFEC) (TJ)"
         android:checked="false"
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />

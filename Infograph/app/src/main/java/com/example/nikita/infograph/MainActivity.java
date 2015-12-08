@@ -34,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      */
-    String headerText = "<html> <head> <meta name='viewport' content='width=device-width, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
-                        "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', 'GDP'], ";
+    String headerText = "";
     String mediumText = "";
     String endText;
 
@@ -70,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         savingsBtn.setOnCheckedChangeListener(checkChange);
 
         currentEnergy = renewableBtn.getText().toString();
+        updateHeaderText(currentEnergy);
+
         /*
         Initialises the Seekbar and text associated with the year - Sets it to a range of 1990-2012
          */
@@ -154,26 +155,31 @@ public class MainActivity extends AppCompatActivity {
             Country c = countriesList.get(i);
             if(i == countriesList.size()-1) {
                 switch(energyType) {
-                    case "Renewable": mediumText += c.getRenewable(year);
+                    case "Renewable energy \n" +
+                            " share of TFEC (%)": mediumText += c.getRenewable(year);
                         break;
-                    case "Total Energy": mediumText += c.getFinalConsumption(year);
+                    case "Total final energy consumption (TFEC) (TJ)": mediumText += c.getFinalConsumption(year);
                         break;
-                    case "Industrial": mediumText += c.getIndustrial(year);
+                    case "Energy intensity of industrial sector \n" +
+                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year);
                         break;
                     default: mediumText += c.getSavings(year);
                 }
             } else {
                 switch(energyType) {
-                    case "Renewable": mediumText += c.getRenewable(year) + ", \n";;
+                    case "Renewable energy \n" +
+                            " share of TFEC (%)": mediumText += c.getRenewable(year) + ", \n";;
                         break;
-                    case "Total Energy": mediumText += c.getFinalConsumption(year) + ", \n";;
+                    case "Total final energy consumption (TFEC) (TJ)": mediumText += c.getFinalConsumption(year) + ", \n";;
                         break;
-                    case "Industrial": mediumText += c.getIndustrial(year) + ", \n";;
+                    case "Energy intensity of industrial sector \n" +
+                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year) + ", \n";;
                         break;
                     default: mediumText += c.getSavings(year) + ", \n";;
                 }
             }
         }
+        updateHeaderText(energyType);
         chartText = headerText + mediumText + endText;
         webview.loadData(chartText, "text/html", null);
         webview.setVisibility(View.VISIBLE);
@@ -233,4 +239,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void updateHeaderText(String energyType) {
+        headerText = "<html> <head> <meta name='viewport' content='width=device-width, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
+                "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', '" + energyType + "'], ";
+    }
 }
