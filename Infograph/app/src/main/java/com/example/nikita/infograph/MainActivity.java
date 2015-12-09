@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             new parseXML().execute(renewableURL, industrialURL, totalEnergyURL, savingsURL, thermalURL, agriculturalURL);
     }
 
+
     private class parseXML extends AsyncTask<String, Void, Boolean> {
 
         private ProgressDialog dialog = new ProgressDialog(MainActivity.this);
@@ -157,6 +158,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method is used to load the map of the application
+     * and change its colour based on the user's option
+     * @param webview
+     * @param year the year that the data refer to
+     * @param energyType the option which the user wants to observe
+     */
     public void loadChartData(WebView webview, int year, String energyType) {
         mediumText = "";
         for(int i = 0; i < countriesList.size(); i++) {
@@ -301,6 +309,12 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * This method is used to update the Header
+     * of text which is submitted to the webview
+     * to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
+     * @param energyType the option which the user wants to observe
+     */
     public void updateHeaderText(String energyType) {
         headerText = "<html> <head> <meta name='viewport' content='width=device-width, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
                 "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', '" + energyType + "'], ";

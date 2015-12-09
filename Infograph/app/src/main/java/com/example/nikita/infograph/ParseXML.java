@@ -14,6 +14,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
+ * This class is used to access data from the World Bank APIs,
+ * display them in the application and store them
  * Created by Nikita on 26/11/2015.
  */
 public class ParseXML {
@@ -25,6 +27,10 @@ public class ParseXML {
         countriesList = new ArrayList<Country>();
     }
 
+    /**
+     * This is the constructor of the parseXML class
+     * @param url the address from where the data are fetched
+     */
     public void parseXML(String url) {
         try {
             this.url = new URL(url);
@@ -73,6 +79,10 @@ public class ParseXML {
         }
     }
 
+    /**
+     * This method is used to get a list with the countries that are displayed in the application
+     * @return the list of all the countries that are displayed in the program
+     */
     public List<Country> getCountriesList() {
         return countriesList;
     }
