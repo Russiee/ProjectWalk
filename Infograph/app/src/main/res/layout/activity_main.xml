@@ -89,4 +89,31 @@
         android:background="@color/unchecked"
         android:textColor="#FFFFFF" />
 
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="industrial"
+        android:id="@+id/thermalButton"
+        android:textOff="Thermal efficiency in power supply (%)"
+        android:textSize="10dp"
+        android:textOn="Thermal efficiency in power supply (%)"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF"
+        android:layout_alignBottom="@+id/savingsBtn"
+        android:layout_toEndOf="@+id/industrialButton"
+        android:checked="false" />
+
+    <ToggleButton
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="industrial"
+        android:id="@+id/agriculturalButton"
+        android:textOff="Energy intensity of agricultural sector \n(MJ/2011 USD PPP)"
+        android:textSize="10dp"
+        android:textOn="Energy intensity of agricultural sector \n(MJ/2011 USD PPP)"
+        android:background="@color/unchecked"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/thermalButton" />
+
 </RelativeLayout>

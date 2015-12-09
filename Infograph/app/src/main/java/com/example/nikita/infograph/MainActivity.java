@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     ToggleButton industrialBtn;
     ToggleButton totalEnergyBtn;
     ToggleButton savingsBtn;
+    ToggleButton thermalBtn;
+    ToggleButton agriculturalBtn;
 
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     String industrialURL = initialURL + "13.1_INDUSTRY.ENERGY.INTENSITY?per_page=700&date=2000%3A2012";
     String totalEnergyURL = initialURL + "1.1_TOTAL.FINAL.ENERGY.CONSUM?per_page=700&date=2000%3A2012";
     String savingsURL = initialURL + "10.1_ENERGY.SAVINGS?per_page=700&date=2000:2012";
+    String thermalURL = initialURL + "11.1_THERMAL.EFFICIENCY?per_page=700&date=2000%3A2012";
+    String agriculturalURL = initialURL + "14.1_AGR.ENERGY.INTENSITY?per_page=700&date=2000%3A2012";
 
     String currentEnergy;
 
@@ -62,11 +66,15 @@ public class MainActivity extends AppCompatActivity {
         totalEnergyBtn = (ToggleButton) findViewById(R.id.totalButton);
         industrialBtn = (ToggleButton) findViewById(R.id.industrialButton);
         savingsBtn = (ToggleButton) findViewById(R.id.savingsBtn);
+        thermalBtn = (ToggleButton) findViewById(R.id.thermalButton);
+        agriculturalBtn = (ToggleButton) findViewById(R.id.agriculturalButton);
 
         renewableBtn.setOnCheckedChangeListener(checkChange);
         totalEnergyBtn.setOnCheckedChangeListener(checkChange);
         industrialBtn.setOnCheckedChangeListener(checkChange);
         savingsBtn.setOnCheckedChangeListener(checkChange);
+        thermalBtn.setOnCheckedChangeListener(checkChange);
+        agriculturalBtn.setOnCheckedChangeListener(checkChange);
 
         currentEnergy = renewableBtn.getText().toString();
         updateHeaderText(currentEnergy);
@@ -117,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         chartView.getSettings().setJavaScriptEnabled(true);
 
         //Executes parsing the XML in another Thread
-            new parseXML().execute(renewableURL, industrialURL, totalEnergyURL, savingsURL);
+            new parseXML().execute(renewableURL, industrialURL, totalEnergyURL, savingsURL, thermalURL, agriculturalURL);
     }
 
     private class parseXML extends AsyncTask<String, Void, Boolean> {
@@ -163,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
                     case "Energy intensity of industrial sector \n" +
                             " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year);
                         break;
+                    case "Thermal efficiency in power supply (%)": mediumText += c.getThermal(year);
+                        break;
+                    case "Energy intensity of agricultural sector \n(MJ/2011 USD PPP)": mediumText += c.getAgricultural(year);
+                        break;
                     default: mediumText += c.getSavings(year);
                 }
             } else {
@@ -173,8 +185,11 @@ public class MainActivity extends AppCompatActivity {
                     case "Total final energy consumption (TFEC) (TJ)": mediumText += c.getFinalConsumption(year) + ", \n";;
                         break;
                     case "Energy intensity of industrial sector \n" +
-                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year) + ", \n";;
+                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year) + ", \n";
                         break;
+                    case "Thermal efficiency in power supply (%)": mediumText += c.getThermal(year) + ", \n";
+                        break;
+                    case "Energy intensity of agricultural sector \n(MJ/2011 USD PPP)": mediumText += c.getAgricultural(year) + ", \n";
                     default: mediumText += c.getSavings(year) + ", \n";;
                 }
             }
@@ -199,6 +214,10 @@ public class MainActivity extends AppCompatActivity {
                     totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     savingsBtn.setChecked(false);
                     savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    agriculturalBtn.setChecked(false);
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    thermalBtn.setChecked(false);
+                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
 
                 }
@@ -212,6 +231,10 @@ public class MainActivity extends AppCompatActivity {
                     totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
                     renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    agriculturalBtn.setChecked(false);
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    thermalBtn.setChecked(false);
+                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == industrialBtn) {
@@ -223,6 +246,10 @@ public class MainActivity extends AppCompatActivity {
                     totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
                     renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    agriculturalBtn.setChecked(false);
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    thermalBtn.setChecked(false);
+                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == totalEnergyBtn) {
@@ -234,6 +261,40 @@ public class MainActivity extends AppCompatActivity {
                     savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
                     renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    agriculturalBtn.setChecked(false);
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    thermalBtn.setChecked(false);
+                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
+                }
+                if(button == thermalBtn) {
+                    currentEnergy = thermalBtn.getText().toString();
+                    thermalBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    industrialBtn.setChecked(false);
+                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    savingsBtn.setChecked(false);
+                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    renewableBtn.setChecked(false);
+                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    totalEnergyBtn.setChecked(false);
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    agriculturalBtn.setChecked(false);
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    loadChartData(chartView, selectedYear, currentEnergy);
+                }
+                if(button == agriculturalBtn) {
+                    currentEnergy = agriculturalBtn.getText().toString();
+                    agriculturalBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    industrialBtn.setChecked(false);
+                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    savingsBtn.setChecked(false);
+                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    renewableBtn.setChecked(false);
+                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    totalEnergyBtn.setChecked(false);
+                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
+                    thermalBtn.setChecked(false);
+                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
             }

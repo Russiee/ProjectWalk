@@ -16,10 +16,14 @@ public class Country {
     private Map<Integer, String> industrialEnergy = new HashMap<Integer, String>();
     private Map<Integer, String> energyConsumption = new HashMap<Integer, String>();
     private Map<Integer, String> energySavings = new HashMap<Integer, String>();
+    private Map<Integer, String> thermalEnergy = new HashMap<Integer, String>();
+    private Map<Integer, String> agriculturalEnergy = new HashMap<Integer, String>();
 
     private static final String RENEWABLE_ID = "Renewable energy share of TFEC (%)";
     private static final String INDUSTRIAL_ID = "Energy intensity of industrial sector (MJ/2011 USD PPP)";
     private static final String ENERGYCONSUMP_ID = "Total final energy consumption (TFEC) (TJ)";
+    private static final String THERMAL_ID = "Thermal efficiency in power supply (%)";
+    private static final String AGRICULTURAL_ID = "Energy intensity of agricultural sector (MJ/2011 USD PPP)";
 
     public Country(String name, int year, String value, String energyType) {
         this.name = name;
@@ -44,6 +48,10 @@ public class Country {
             case INDUSTRIAL_ID: industrialEnergy.put(year, value);
                 break;
             case ENERGYCONSUMP_ID: energyConsumption.put(year, value);
+                break;
+            case THERMAL_ID: thermalEnergy.put(year, value);
+                break;
+            case AGRICULTURAL_ID: agriculturalEnergy.put(year, value);
                 break;
             default: energySavings.put(year, value);
         }
@@ -77,5 +85,13 @@ public class Country {
 
     public String getSavings(int year) {
         return "[ '" + name + "', " + energySavings.get(year) + "]";
+    }
+
+    public String getThermal(int year) {
+        return "[ '" + name + "', " + thermalEnergy.get(year) + "]";
+    }
+
+    public String getAgricultural(int year) {
+        return "[ '" + name + "', " + agriculturalEnergy.get(year) + "]";
     }
 }
