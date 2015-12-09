@@ -191,4 +191,25 @@ public class Country {
     public String getAgricultural(int year) {
         return "[ '" + name + "', " + agriculturalEnergy.get(year) + "]";
     }
+
+    public Map getRenewebleMap(){
+        return renewableEnergy;
+    }
+    public Map getIndustryMap(){
+        return industrialEnergy;
+    }
+    public Map getFinalConsunptionMap(){
+        return energyConsumption;
+    }
+    public Map getSavingsMap(){
+        return energySavings;
+    }
+
+    public Map getThermalMap() {
+        return thermalEnergy;
+    }
+
+    public Map getAgriculturalMap() {
+        return agriculturalEnergy;
+    }
 }
