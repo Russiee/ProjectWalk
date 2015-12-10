@@ -1,10 +1,12 @@
 package com.example.nikita.infograph;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -13,6 +15,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
     String agriculturalURL = initialURL + "14.1_AGR.ENERGY.INTENSITY?per_page=700&date=2000%3A2012";
 
     String currentEnergy;
+
+    private final String tempFileName = "data.txt";
+    public File tempFile;
+    boolean isFileAvailable;
 
     /**
      * Creates the Activity - without a title
@@ -100,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
                                           boolean fromUser) {
                 selectedYear = progress + 2000;
                 yearText.setText(Integer.toString(selectedYear));
-                loadChartData(chartView, selectedYear, currentEnergy);
+                if(countriesList != null && countriesList.size() != 0)
+                    loadChartData(chartView, selectedYear, currentEnergy);
             }
         });
 
@@ -124,6 +135,17 @@ public class MainActivity extends AppCompatActivity {
         chartView = (WebView) findViewById(R.id.chartView);
         chartView.getSettings().setJavaScriptEnabled(true);
 
+        /** Getting Cache Directory */
+        File cDir = getBaseContext().getFilesDir();
+        Log.d("Cache", getFilesDir().toString());
+        tempFile = new File(cDir.getPath() + "/data.txt");
+
+        if(tempFile.exists())
+        {
+            isFileAvailable = true;
+        }
+        Log.d("Internet", "Cache file exists? " + isFileAvailable);
+
         //Executes parsing the XML in another Thread
             new parseXML().execute(renewableURL, industrialURL, totalEnergyURL, savingsURL, thermalURL, agriculturalURL);
     }
@@ -141,11 +163,43 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
+
             ParseXML parse = new ParseXML();
-            for(int i = 0; i < params.length; i++) {
-                parse.parseXML(params[i]);
+
+            if(!isFileAvailable)
+            {
+                for(int i = 0; i < params.length; i++) {
+                    parse.parseXML(params[i],false,null);
+                }
+                countriesList = parse.getCountriesList();
+
+                List<String> countriesData = parse.getCountriesData();
+
+                FileOutputStream fos;
+                try
+                {
+                    fos = openFileOutput(tempFileName, Context.MODE_PRIVATE);
+                    for(String countryData : countriesData)
+                    {
+                        fos.write((countryData + "\n").getBytes());
+                        Log.d("Cache", countryData);
+                    }
+                    fos.flush();
+                    fos.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    Log.d("Internet","There is an error!");
+                }
             }
-            countriesList = parse.getCountriesList();
+            else
+            {
+                for(int i = 0; i < params.length; i++) {
+                    parse.parseXML(params[i],true,tempFile);
+                }
+                countriesList = parse.getCountriesList();
+            }
             return true;
         }
 
