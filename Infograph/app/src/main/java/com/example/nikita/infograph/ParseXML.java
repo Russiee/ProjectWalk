@@ -128,7 +128,6 @@ public class ParseXML {
                     value = data[2];
                     energyID = data[3];
 
-                    System.out.println(countryID + " " + yearString + " " + value + " " + energyID);
                     Boolean exists = false;
 
                     for (Country c : countriesList) {

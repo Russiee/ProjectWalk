@@ -3,8 +3,8 @@
 
     <item
         android:state_checked="false"
-        android:drawable="@color/unchecked" />
+        android:drawable="@drawable/industrialoff" />
     <item
         android:state_checked="true"
-        android:drawable="@color/checked" />
+        android:drawable="@drawable/industrialon" />
 </selector>

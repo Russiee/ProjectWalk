@@ -23,6 +23,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String RENEWABLE_ID = "Renewable energy share of TFEC (%)";
+    private static final String INDUSTRIAL_ID = "Energy intensity of industrial sector (MJ/2011 USD PPP)";
+    private static final String ENERGYCONSUMP_ID = "Total final energy consumption (TFEC) (TJ)";
+    private static final String THERMAL_ID = "Thermal efficiency in power supply (%)";
+    private static final String AGRICULTURAL_ID = "Energy intensity of agricultural sector (MJ/2011 USD PPP)";
+    private static final String SAVINGS_ID = "Energy savings of primary energy (TJ)";
+
     List<Country> countriesList;
 
     WebView chartView; //The main view for the chart
@@ -39,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     ToggleButton thermalBtn;
     ToggleButton agriculturalBtn;
 
+
+
     /*
     Header, Body and Footer of text to be submitted to the webview to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      */
@@ -54,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     String thermalURL = initialURL + "11.1_THERMAL.EFFICIENCY?per_page=700&date=2000%3A2012";
     String agriculturalURL = initialURL + "14.1_AGR.ENERGY.INTENSITY?per_page=700&date=2000%3A2012";
 
-    String currentEnergy;
+    int currentEnergy;
 
     private final String tempFileName = "data.txt";
     public File tempFile;
@@ -86,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         thermalBtn.setOnCheckedChangeListener(checkChange);
         agriculturalBtn.setOnCheckedChangeListener(checkChange);
 
-        currentEnergy = renewableBtn.getText().toString();
+        currentEnergy = renewableBtn.getId();
         updateHeaderText(currentEnergy);
 
         /*
@@ -182,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
                     for(String countryData : countriesData)
                     {
                         fos.write((countryData + "\n").getBytes());
-                        Log.d("Cache", countryData);
                     }
                     fos.flush();
                     fos.close();
@@ -219,40 +227,37 @@ public class MainActivity extends AppCompatActivity {
      * @param year the year that the data refer to
      * @param energyType the option which the user wants to observe
      */
-    public void loadChartData(WebView webview, int year, String energyType) {
+    public void loadChartData(WebView webview, int year, int energyType) {
         mediumText = "";
         for(int i = 0; i < countriesList.size(); i++) {
             Country c = countriesList.get(i);
             if(i == countriesList.size()-1) {
-                switch(energyType) {
-                    case "Renewable energy \n" +
-                            " share of TFEC (%)": mediumText += c.getRenewable(year);
-                        break;
-                    case "Total final energy consumption (TFEC) (TJ)": mediumText += c.getFinalConsumption(year);
-                        break;
-                    case "Energy intensity of industrial sector \n" +
-                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year);
-                        break;
-                    case "Thermal efficiency in power supply (%)": mediumText += c.getThermal(year);
-                        break;
-                    case "Energy intensity of agricultural sector \n(MJ/2011 USD PPP)": mediumText += c.getAgricultural(year);
-                        break;
-                    default: mediumText += c.getSavings(year);
+                if(renewableBtn.getId() == energyType) {
+                    mediumText += c.getRenewable(year);
+                } else if(totalEnergyBtn.getId() == energyType) {
+                    mediumText += c.getFinalConsumption(year);
+                } else if(industrialBtn.getId() == energyType) {
+                    mediumText += c.getIndustrial(year);
+                } else if(savingsBtn.getId() == energyType) {
+                    mediumText += c.getSavings(year);
+                } else if(thermalBtn.getId() == energyType) {
+                    mediumText += c.getThermal(year);
+                } else {
+                    mediumText += c.getAgricultural(year);
                 }
             } else {
-                switch(energyType) {
-                    case "Renewable energy \n" +
-                            " share of TFEC (%)": mediumText += c.getRenewable(year) + ", \n";;
-                        break;
-                    case "Total final energy consumption (TFEC) (TJ)": mediumText += c.getFinalConsumption(year) + ", \n";;
-                        break;
-                    case "Energy intensity of industrial sector \n" +
-                            " (MJ/2011 USD PPP)": mediumText += c.getIndustrial(year) + ", \n";
-                        break;
-                    case "Thermal efficiency in power supply (%)": mediumText += c.getThermal(year) + ", \n";
-                        break;
-                    case "Energy intensity of agricultural sector \n(MJ/2011 USD PPP)": mediumText += c.getAgricultural(year) + ", \n";
-                    default: mediumText += c.getSavings(year) + ", \n";;
+                if(renewableBtn.getId() == energyType) {
+                    mediumText += c.getRenewable(year) + ", \n";
+                } else if(totalEnergyBtn.getId() == energyType) {
+                    mediumText += c.getFinalConsumption(year) + ", \n";
+                } else if(industrialBtn.getId() == energyType) {
+                    mediumText += c.getIndustrial(year) + ", \n";
+                } else if(savingsBtn.getId() == energyType) {
+                    mediumText += c.getSavings(year) + ", \n";
+                } else if(thermalBtn.getId() == energyType) {
+                    mediumText += c.getThermal(year) + ", \n";
+                } else {
+                    mediumText += c.getAgricultural(year) + ", \n";
                 }
             }
         }
@@ -268,95 +273,59 @@ public class MainActivity extends AppCompatActivity {
         public void onCheckedChanged(CompoundButton button, boolean isChecked) {
             if(isChecked) {
                 if(button == renewableBtn) {
-                    currentEnergy = renewableBtn.getText().toString();
-                    renewableBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = renewableBtn.getId();
+                    System.out.println(currentEnergy);
                     industrialBtn.setChecked(false);
-                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     totalEnergyBtn.setChecked(false);
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     savingsBtn.setChecked(false);
-                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     agriculturalBtn.setChecked(false);
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     thermalBtn.setChecked(false);
-                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
 
                 }
                 if(button == savingsBtn) {
-                    currentEnergy = savingsBtn.getText().toString();
-                    System.out.println(savingsBtn.getText().toString());
-                    savingsBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = savingsBtn.getId();
                     industrialBtn.setChecked(false);
-                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     totalEnergyBtn.setChecked(false);
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
-                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     agriculturalBtn.setChecked(false);
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     thermalBtn.setChecked(false);
-                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == industrialBtn) {
-                    currentEnergy = industrialBtn.getText().toString();
-                    industrialBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = industrialBtn.getId();
                     savingsBtn.setChecked(false);
-                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     totalEnergyBtn.setChecked(false);
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
-                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     agriculturalBtn.setChecked(false);
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     thermalBtn.setChecked(false);
-                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == totalEnergyBtn) {
-                    currentEnergy = totalEnergyBtn.getText().toString();
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = totalEnergyBtn.getId();
                     industrialBtn.setChecked(false);
-                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     savingsBtn.setChecked(false);
-                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
-                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     agriculturalBtn.setChecked(false);
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     thermalBtn.setChecked(false);
-                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == thermalBtn) {
-                    currentEnergy = thermalBtn.getText().toString();
-                    thermalBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = thermalBtn.getId();
                     industrialBtn.setChecked(false);
-                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     savingsBtn.setChecked(false);
-                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
-                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     totalEnergyBtn.setChecked(false);
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     agriculturalBtn.setChecked(false);
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
                 if(button == agriculturalBtn) {
-                    currentEnergy = agriculturalBtn.getText().toString();
-                    agriculturalBtn.setBackgroundColor(Color.parseColor("#9EFF0044"));
+                    currentEnergy = agriculturalBtn.getId();
                     industrialBtn.setChecked(false);
-                    industrialBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     savingsBtn.setChecked(false);
-                    savingsBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     renewableBtn.setChecked(false);
-                    renewableBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     totalEnergyBtn.setChecked(false);
-                    totalEnergyBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     thermalBtn.setChecked(false);
-                    thermalBtn.setBackgroundColor(Color.parseColor("#96C41C9A"));
                     loadChartData(chartView, selectedYear, currentEnergy);
                 }
             }
@@ -369,8 +338,22 @@ public class MainActivity extends AppCompatActivity {
      * to create an HTML Page with a JS Script to retrieve a chart from the Google APIs
      * @param energyType the option which the user wants to observe
      */
-    public void updateHeaderText(String energyType) {
+    public void updateHeaderText(int energyType) {
+        String energyText = "";
+        if(renewableBtn.getId() == energyType) {
+           energyText = RENEWABLE_ID;
+        } else if(totalEnergyBtn.getId() == energyType) {
+            energyText = ENERGYCONSUMP_ID;
+        } else if(industrialBtn.getId() == energyType) {
+            energyText = INDUSTRIAL_ID;
+        } else if(savingsBtn.getId() == energyType) {
+            energyText = SAVINGS_ID;
+        } else if(thermalBtn.getId() == energyType) {
+            energyText = THERMAL_ID;
+        } else {
+            energyText = AGRICULTURAL_ID;
+        }
         headerText = "<html> <head> <meta name='viewport' content='width=device-width, height=device-height' /> <script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script> <script type=\"text/javascript\"> " +
-                "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', '" + energyType + "'], ";
+                "google.load(\"visualization\", \"1\", {packages:[\"geochart\"]}); google.setOnLoadCallback(drawRegionsMap); function drawRegionsMap() { var data = google.visualization.arrayToDataTable([ ['Country', '" + energyText + "'], ";
     }
 }
